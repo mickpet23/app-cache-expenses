@@ -37,13 +37,13 @@ const totalCost = (costArray) => {
 
 //array of objects for localStorage 
 let weekArray;
-if (localStorage.getItem('items')) {
-	weekArray = JSON.parse(localStorage.getItem('items'));
+if (localStorage.getItem('expenses')) {
+	weekArray = JSON.parse(localStorage.getItem('expenses'));
 
 	//clear up local storage after 4 weeks
 	if (weekArray.length >= 4) {
 		weekArray.length = 3;
-		localStorage.setItem('items', JSON.stringify(weekArray));
+		localStorage.setItem('expenses', JSON.stringify(weekArray));
 	}
 	//TODO: initially load information in weekArray for 1 or 2 weeks?
 	let div = document.createElement('div');
@@ -93,7 +93,7 @@ if (localStorage.getItem('items')) {
 				}
 			})
 
-			localStorage.setItem('items', JSON.stringify(weekArray));
+			localStorage.setItem('expenses', JSON.stringify(weekArray));
 
 			//update total cost
 			while (h2TotalCost.firstChild) {
@@ -137,7 +137,7 @@ if (localStorage.getItem('items')) {
 			}
 		})
 
-		localStorage.setItem('items', JSON.stringify(weekArray));
+		localStorage.setItem('expenses', JSON.stringify(weekArray));
 
 		//update total cost
 		while (h2TotalCost.firstChild) {
@@ -159,7 +159,7 @@ if (localStorage.getItem('items')) {
 				}
 			})
 
-			localStorage.setItem('items', JSON.stringify(weekArray));
+			localStorage.setItem('expenses', JSON.stringify(weekArray));
 
 			//update total cost
 			while (h2TotalCost.firstChild) {
@@ -215,7 +215,7 @@ addWeek.addEventListener('click', () => {
 		//input: '',
 		days: addDays
 	}].concat(weekArray);
-	localStorage.setItem('items', JSON.stringify(weekArray));
+	localStorage.setItem('expenses', JSON.stringify(weekArray));
 	
 	h2TotalCost.appendChild(document.createTextNode('Total Cost: $0'));
 
@@ -247,7 +247,7 @@ addWeek.addEventListener('click', () => {
 			}
 		})
 
-		localStorage.setItem('items', JSON.stringify(weekArray));
+		localStorage.setItem('expenses', JSON.stringify(weekArray));
 
 		//update total cost
 		while (h2TotalCost.firstChild) {
@@ -269,7 +269,7 @@ addWeek.addEventListener('click', () => {
 				}
 			})
 
-			localStorage.setItem('items', JSON.stringify(weekArray));
+			localStorage.setItem('expenses', JSON.stringify(weekArray));
 
 			//update total cost
 			while (h2TotalCost.firstChild) {
