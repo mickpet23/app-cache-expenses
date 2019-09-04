@@ -1,14 +1,294 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<link rel="stylesheet" type="text/css" href="./styles.css"/>
 	<title>AppCache Expenses</title>
 </head>
 <body>
 	<button>Add Week</button>
-	<h1 class="dates"></h1>
-	<h2 class="totalCost"></h2>
-	<input type="text">
-	<button>Add Cost</button>
-	<ul></ul>
+	<div id='container'></div>
+
+	
+	<script type="text/javascript">
+
+
+//TODO: css iphone 5 friendly
+//TODO: refactor
+
+const divContainer = document.getElementById('container');
+const addWeek = document.getElementsByTagName('button')[0];
+
+//compute total cost from weekArray
+const totalCost = (costArray) => {
+	let answer = costArray.reduce((total, currentObj) => {
+		if (currentObj.cost[0] === '$') {
+			currentObj.cost = currentObj.cost.slice(1);
+		}
+		let parsedNumber;
+		if (currentObj.cost.includes('tip')) {
+			parsedNumber = parseFloat(currentObj.cost) * -1;
+		} else {
+			parsedNumber = parseFloat(currentObj.cost);
+		}
+		return total + parsedNumber;
+	}, 0)
+	return answer.toFixed(2);
+}
+
+//array of objects for localStorage 
+let weekArray;
+if (localStorage.getItem('items')) {
+	weekArray = JSON.parse(localStorage.getItem('items'));
+
+	//clear up local storage after 4 weeks
+	if (weekArray.length >= 4) {
+		weekArray.length = 3;
+		localStorage.setItem('items', JSON.stringify(weekArray));
+	}
+	//TODO: initially load information in weekArray for 1 or 2 weeks?
+	let div = document.createElement('div');
+	let h1Dates = document.createElement('h1');
+	let h2TotalCost = document.createElement('h2');
+	let inputCost= document.createElement('input');
+	let buttonAddCost = document.createElement('button');
+	buttonAddCost.appendChild(document.createTextNode('Add Cost'));
+	let ul = document.createElement('ul');
+
+	div.appendChild(h1Dates);
+	div.appendChild(h2TotalCost);
+	div.appendChild(inputCost);
+	div.appendChild(buttonAddCost);
+	div.appendChild(ul);
+
+	divContainer.insertAdjacentElement('afterbegin', div);	
+
+	//TODO: refactor code starting at let div can be put into a function to be reused.	
+
+	h1Dates.appendChild(document.createTextNode(weekArray[0].dates));
+
+	//compute total cost from weekArray
+	h2TotalCost.appendChild(document.createTextNode('Total Cost: $' + totalCost(weekArray.filter(obj => {
+			return obj.dates == h1Dates.innerHTML;
+		})[0].cost)));	
+
+	weekArray[0].cost.map(obj => {
+		//TODO: refactor code to create li element
+		let li = document.createElement('li');
+		li.appendChild(document.createTextNode(obj.cost));
+		li.setAttribute('id', obj.id);
+		let deleteButton = document.createElement('button');
+		deleteButton.appendChild(document.createTextNode('Delete'));
+		li.appendChild(deleteButton);
+		ul.appendChild(li);	
+		
+		//delete cost item from (u)list
+		deleteButton.addEventListener('click', () => {
+			//TODO: refactor code below
+			//delete cost item from weekArray
+			weekArray.forEach(obj => {
+				if (obj.dates == h1Dates.innerHTML) {
+					obj.cost = obj.cost.filter(obj => {
+						return obj.id != deleteButton.parentElement.getAttribute('id');
+					})
+				}
+			})
+
+			localStorage.setItem('items', JSON.stringify(weekArray));
+
+			//update total cost
+			while (h2TotalCost.firstChild) {
+				h2TotalCost.removeChild(h2TotalCost.firstChild);
+			}
+
+			h2TotalCost.appendChild(document.createTextNode('Total Cost: $' + totalCost(weekArray.filter(obj => {
+				return obj.dates == h1Dates.innerHTML;
+			})[0].cost)));
+
+			//delete li element from ul
+			ul.removeChild(deleteButton.parentElement);
+		})		
+	})
+	
+	//add cost button 
+	buttonAddCost.addEventListener('click', () => {
+		let li = document.createElement('li');
+		if (inputCost.value.includes('tip')) {
+			inputCost.value = inputCost.value + ' tip detected. CHECK!'
+		}
+		li.appendChild(document.createTextNode(inputCost.value));
+		let deleteButton = document.createElement('button');
+		deleteButton.appendChild(document.createTextNode('Delete'));
+		li.appendChild(deleteButton);
+		ul.appendChild(li);
+
+		let liId;
+		if (li.previousSibling == null) {
+			liId = '1';
+			li.setAttribute('id', liId);
+		} else {
+			liId = (Number(li.previousSibling.getAttribute('id')) + 1).toString();
+			li.setAttribute('id', liId);
+		}
+
+		//add cost item to weekArray
+		weekArray.forEach(obj => {
+			if (obj.dates == inputCost.previousSibling.previousSibling.innerHTML) {
+				obj.cost.push({id: liId, cost: inputCost.value})
+			}
+		})
+
+		localStorage.setItem('items', JSON.stringify(weekArray));
+
+		//update total cost
+		while (h2TotalCost.firstChild) {
+			h2TotalCost.removeChild(h2TotalCost.firstChild);
+		}
+
+		h2TotalCost.appendChild(document.createTextNode('Total Cost: $' + totalCost(weekArray.filter(obj => {
+			return obj.dates == h1Dates.innerHTML;
+		})[0].cost)));		
+
+		//delete cost item from (u)list
+		deleteButton.addEventListener('click', () => {
+			//delete cost item from weekArray
+			weekArray.forEach(obj => {
+				if (obj.dates == h1Dates.innerHTML) {
+					obj.cost = obj.cost.filter(obj => {
+						return obj.id != deleteButton.parentElement.getAttribute('id');
+					})
+				}
+			})
+
+			localStorage.setItem('items', JSON.stringify(weekArray));
+
+			//update total cost
+			while (h2TotalCost.firstChild) {
+				h2TotalCost.removeChild(h2TotalCost.firstChild);
+			}
+
+			h2TotalCost.appendChild(document.createTextNode('Total Cost: $' + totalCost(weekArray.filter(obj => {
+				return obj.dates == h1Dates.innerHTML;
+			})[0].cost)));
+
+			//delete li element from ul
+			ul.removeChild(deleteButton.parentElement);
+		})
+
+		//clear input field after adding item
+		inputCost.value = '';
+	})
+} else {
+	weekArray = [];
+}
+
+addWeek.addEventListener('click', () => {
+	let div = document.createElement('div');
+	let h1Dates = document.createElement('h1');
+	let h2TotalCost = document.createElement('h2');
+	let inputCost= document.createElement('input');
+	let buttonAddCost = document.createElement('button');
+	buttonAddCost.appendChild(document.createTextNode('Add Cost'));	
+	let ul = document.createElement('ul');
+
+	div.appendChild(h1Dates);
+	div.appendChild(h2TotalCost);
+	div.appendChild(inputCost);
+	div.appendChild(buttonAddCost);
+	div.appendChild(ul);
+
+	divContainer.insertAdjacentElement('afterbegin', div)
+
+	if (weekArray.length >= 1) {
+		addDays = weekArray[0].days + 7;
+	} else {
+		addDays = 7;
+	}
+
+	let nextBeginDate = new Date(2019,7,26);
+	let nextEndDate = new Date(2019,8,1);
+	nextBeginDate.setDate(nextBeginDate.getDate() + addDays);
+	nextEndDate.setDate(nextEndDate.getDate() + addDays);
+	h1Dates.appendChild(document.createTextNode(nextBeginDate.toLocaleDateString("en-US") + ' - ' + nextEndDate.toLocaleDateString("en-US")));
+	weekArray = [{
+		dates: nextBeginDate.toLocaleDateString("en-US") + ' - ' + nextEndDate.toLocaleDateString("en-US"),
+		cost: [],
+		//input: '',
+		days: addDays
+	}].concat(weekArray);
+	localStorage.setItem('items', JSON.stringify(weekArray));
+	
+	h2TotalCost.appendChild(document.createTextNode('Total Cost: $0'));
+
+	//add cost item
+	buttonAddCost.addEventListener('click', () => {
+		let li = document.createElement('li');
+		if (inputCost.value.includes('tip')) {
+			inputCost.value = inputCost.value + ' tip detected. CHECK!'
+		}
+		li.appendChild(document.createTextNode(inputCost.value));
+		let deleteButton = document.createElement('button');
+		deleteButton.appendChild(document.createTextNode('Delete'));
+		li.appendChild(deleteButton);
+		ul.appendChild(li);
+
+		let liId;
+		if (li.previousSibling == null) {
+			liId = '1';
+			li.setAttribute('id', liId);
+		} else {
+			liId = (Number(li.previousSibling.getAttribute('id')) + 1).toString();
+			li.setAttribute('id', liId);
+		}
+
+		//add cost item to weekArray
+		weekArray.forEach(obj => {
+			if (obj.dates == inputCost.previousSibling.previousSibling.innerHTML) {
+				obj.cost.push({id: liId, cost: inputCost.value})
+			}
+		})
+
+		localStorage.setItem('items', JSON.stringify(weekArray));
+
+		//update total cost
+		while (h2TotalCost.firstChild) {
+			h2TotalCost.removeChild(h2TotalCost.firstChild);
+		}
+
+		h2TotalCost.appendChild(document.createTextNode('Total Cost: $' + totalCost(weekArray.filter(obj => {
+			return obj.dates == h1Dates.innerHTML;
+		})[0].cost)));		
+
+		//delete cost item from (u)list
+		deleteButton.addEventListener('click', () => {
+			//delete cost item from weekArray
+			weekArray.forEach(obj => {
+				if (obj.dates == h1Dates.innerHTML) {
+					obj.cost = obj.cost.filter(obj => {
+						return obj.id != deleteButton.parentElement.getAttribute('id');
+					})
+				}
+			})
+
+			localStorage.setItem('items', JSON.stringify(weekArray));
+
+			//update total cost
+			while (h2TotalCost.firstChild) {
+				h2TotalCost.removeChild(h2TotalCost.firstChild);
+			}
+
+			h2TotalCost.appendChild(document.createTextNode('Total Cost: $' + totalCost(weekArray.filter(obj => {
+				return obj.dates == h1Dates.innerHTML;
+			})[0].cost)));
+
+			//delete li element from ul
+			ul.removeChild(deleteButton.parentElement);
+		})
+
+		//clear input field after adding item
+		inputCost.value = '';
+	})
+})
+
+	</script>
 </body>
 </html>
