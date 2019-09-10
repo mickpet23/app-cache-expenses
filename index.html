@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- <html manifest="offline.manifest"> -->
+<html manifest="offline.manifest">
 <html>
 <head>
 	<link rel="stylesheet" type="text/css" href="./styles.css"/>
@@ -52,6 +52,8 @@ const idaTotalCost = (costArray) => {
 
 //array of objects for localStorage 
 let weekArray;
+
+//initial loading
 if (localStorage.getItem('expenses')) {
 	weekArray = JSON.parse(localStorage.getItem('expenses'));
 
@@ -60,7 +62,10 @@ if (localStorage.getItem('expenses')) {
 		weekArray.length = 3;
 		localStorage.setItem('expenses', JSON.stringify(weekArray));
 	}
+	
 	//TODO: initially load information in weekArray for 1 or 2 weeks?
+
+	//create html elements for data
 	let div = document.createElement('div');
 	let h1Dates = document.createElement('h1');
 	let h2TotalCost = document.createElement('h2');
@@ -127,6 +132,15 @@ if (localStorage.getItem('expenses')) {
 				return obj.dates == h1Dates.innerHTML;
 			})[0].cost)));
 
+			//update ida's total cost
+			while (h3VenmoIda.firstChild) {
+				h3VenmoIda.removeChild(h3VenmoIda.firstChild);
+			}
+
+			h3VenmoIda.appendChild(document.createTextNode('Ida: $' + idaTotalCost(weekArray.filter(obj => {
+				return obj.dates == h1Dates.innerHTML;
+			})[0].cost)));
+
 			//delete li element from ul
 			ul.removeChild(deleteButton.parentElement);
 		})		
@@ -155,7 +169,8 @@ if (localStorage.getItem('expenses')) {
 
 		//add cost item to weekArray
 		weekArray.forEach(obj => {
-			if (obj.dates == inputCost.previousSibling.previousSibling.innerHTML) {
+			//TODO: refactor previousSibling
+			if (obj.dates == inputCost.previousSibling.previousSibling.previousSibling.innerHTML) {
 				console.log('added to weekArray');
 				obj.cost.push({id: liId, cost: inputCost.value})
 			}
@@ -169,6 +184,15 @@ if (localStorage.getItem('expenses')) {
 		}
 
 		h2TotalCost.appendChild(document.createTextNode('Total Cost: $' + totalCost(weekArray.filter(obj => {
+			return obj.dates == h1Dates.innerHTML;
+		})[0].cost)));
+
+		//update ida's total cost
+		while (h3VenmoIda.firstChild) {
+			h3VenmoIda.removeChild(h3VenmoIda.firstChild);
+		}
+
+		h3VenmoIda.appendChild(document.createTextNode('Ida: $' + idaTotalCost(weekArray.filter(obj => {
 			return obj.dates == h1Dates.innerHTML;
 		})[0].cost)));		
 
@@ -194,6 +218,15 @@ if (localStorage.getItem('expenses')) {
 				return obj.dates == h1Dates.innerHTML;
 			})[0].cost)));
 
+			//update ida's total cost
+			while (h3VenmoIda.firstChild) {
+				h3VenmoIda.removeChild(h3VenmoIda.firstChild);
+			}
+
+			h3VenmoIda.appendChild(document.createTextNode('Ida: $' + idaTotalCost(weekArray.filter(obj => {
+				return obj.dates == h1Dates.innerHTML;
+			})[0].cost)));
+
 			//delete li element from ul
 			ul.removeChild(deleteButton.parentElement);
 		})
@@ -209,6 +242,7 @@ addWeek.addEventListener('click', () => {
 	let div = document.createElement('div');
 	let h1Dates = document.createElement('h1');
 	let h2TotalCost = document.createElement('h2');
+	let h3VenmoIda = document.createElement('h3');	
 	let inputCost= document.createElement('input');
 	let buttonAddCost = document.createElement('button');
 	buttonAddCost.appendChild(document.createTextNode('Add Cost'));	
@@ -216,6 +250,7 @@ addWeek.addEventListener('click', () => {
 
 	div.appendChild(h1Dates);
 	div.appendChild(h2TotalCost);
+	div.appendChild(h3VenmoIda);
 	div.appendChild(inputCost);
 	div.appendChild(buttonAddCost);
 	div.appendChild(ul);
@@ -243,6 +278,8 @@ addWeek.addEventListener('click', () => {
 	
 	h2TotalCost.appendChild(document.createTextNode('Total Cost: $0'));
 
+	h3VenmoIda.appendChild(document.createTextNode('Ida: $0'));
+
 	//add cost item
 	buttonAddCost.addEventListener('click', () => {
 		let li = document.createElement('li');
@@ -266,7 +303,7 @@ addWeek.addEventListener('click', () => {
 
 		//add cost item to weekArray
 		weekArray.forEach(obj => {
-			if (obj.dates == inputCost.previousSibling.previousSibling.innerHTML) {
+			if (obj.dates == inputCost.previousSibling.previousSibling.previousSibling.innerHTML) {
 				obj.cost.push({id: liId, cost: inputCost.value})
 			}
 		})
@@ -279,6 +316,15 @@ addWeek.addEventListener('click', () => {
 		}
 
 		h2TotalCost.appendChild(document.createTextNode('Total Cost: $' + totalCost(weekArray.filter(obj => {
+			return obj.dates == h1Dates.innerHTML;
+		})[0].cost)));
+
+		//update ida's total cost
+		while (h3VenmoIda.firstChild) {
+			h3VenmoIda.removeChild(h3VenmoIda.firstChild);
+		}
+
+		h3VenmoIda.appendChild(document.createTextNode('Ida: $' + idaTotalCost(weekArray.filter(obj => {
 			return obj.dates == h1Dates.innerHTML;
 		})[0].cost)));		
 
@@ -301,6 +347,15 @@ addWeek.addEventListener('click', () => {
 			}
 
 			h2TotalCost.appendChild(document.createTextNode('Total Cost: $' + totalCost(weekArray.filter(obj => {
+				return obj.dates == h1Dates.innerHTML;
+			})[0].cost)));
+
+			//update ida's total cost
+			while (h3VenmoIda.firstChild) {
+				h3VenmoIda.removeChild(h3VenmoIda.firstChild);
+			}
+
+			h3VenmoIda.appendChild(document.createTextNode('Ida: $' + idaTotalCost(weekArray.filter(obj => {
 				return obj.dates == h1Dates.innerHTML;
 			})[0].cost)));
 
