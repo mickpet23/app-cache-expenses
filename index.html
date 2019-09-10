@@ -10,14 +10,12 @@
 
 	
 	<script type="text/javascript">
-
-
-//TODO: css iphone 5 friendly
+//TODO: improve css
 //TODO: refactor
 
 const divContainer = document.getElementById('container');
 const addWeek = document.getElementsByTagName('button')[0];
-
+//TODO: refactor totalCost and idaTotalCost
 //compute total cost from weekArray
 const totalCost = (costArray) => {
 	let answer = costArray.reduce((total, currentObj) => {
@@ -35,6 +33,22 @@ const totalCost = (costArray) => {
 	return answer.toFixed(2);
 }
 
+const idaTotalCost = (costArray) => {
+	let answer = costArray.reduce((total, currentObj) => {
+		if (currentObj.cost[0] === '$') {
+			currentObj.cost = currentObj.cost.slice(1);
+		}
+		let parsedNumber;
+		if (currentObj.cost.includes(' ida') || currentObj.cost.includes(' Ida')) {
+			parsedNumber = parseFloat(currentObj.cost);
+		} else {
+			parsedNumber = 0;
+		}
+		return total + parsedNumber;
+	}, 0)
+	return answer.toFixed(2);	
+}
+
 //array of objects for localStorage 
 let weekArray;
 if (localStorage.getItem('expenses')) {
@@ -49,6 +63,7 @@ if (localStorage.getItem('expenses')) {
 	let div = document.createElement('div');
 	let h1Dates = document.createElement('h1');
 	let h2TotalCost = document.createElement('h2');
+	let h3VenmoIda = document.createElement('h3');
 	let inputCost= document.createElement('input');
 	let buttonAddCost = document.createElement('button');
 	buttonAddCost.appendChild(document.createTextNode('Add Cost'));
@@ -56,6 +71,7 @@ if (localStorage.getItem('expenses')) {
 
 	div.appendChild(h1Dates);
 	div.appendChild(h2TotalCost);
+	div.appendChild(h3VenmoIda);
 	div.appendChild(inputCost);
 	div.appendChild(buttonAddCost);
 	div.appendChild(ul);
@@ -69,8 +85,14 @@ if (localStorage.getItem('expenses')) {
 	//compute total cost from weekArray
 	h2TotalCost.appendChild(document.createTextNode('Total Cost: $' + totalCost(weekArray.filter(obj => {
 			return obj.dates == h1Dates.innerHTML;
-		})[0].cost)));	
+		})[0].cost)));
 
+	//compute Ida's total cost from weekArray
+	h3VenmoIda.appendChild(document.createTextNode('Ida: $' + idaTotalCost(weekArray.filter(obj => {
+			return obj.dates == h1Dates.innerHTML;
+	})[0].cost)));
+
+	//create li,etc from weekArray
 	weekArray[0].cost.map(obj => {
 		//TODO: refactor code to create li element
 		let li = document.createElement('li');
