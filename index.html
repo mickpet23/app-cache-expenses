@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html manifest="offline.manifest">
+<!-- <html manifest="offline.manifest"> -->
+<html>
 <head>
 	<link rel="stylesheet" type="text/css" href="./styles.css"/>
 	<title>AppCache Expenses</title>
@@ -155,6 +156,7 @@ if (localStorage.getItem('expenses')) {
 		//add cost item to weekArray
 		weekArray.forEach(obj => {
 			if (obj.dates == inputCost.previousSibling.previousSibling.innerHTML) {
+				console.log('added to weekArray');
 				obj.cost.push({id: liId, cost: inputCost.value})
 			}
 		})
