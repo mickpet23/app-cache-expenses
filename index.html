@@ -4,6 +4,9 @@
 <head>
 	<link rel="stylesheet" type="text/css" href="./styles.css"/>
 	<title>AppCache Expenses</title>
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<link rel="apple-touch-icon" href="./icon-cyclist-48.png">
 </head>
 <body>
 	<button>Add Week</button>
@@ -13,10 +16,14 @@
 	<script type="text/javascript">
 //TODO: improve css
 //TODO: refactor
+//TODO: hometown 8.49 should work
+//TODO: disable zooming feature on iphone
+//TODO: create home screen icon
+//TODO: customize for mom, dad, bobo
 
 const divContainer = document.getElementById('container');
 const addWeek = document.getElementsByTagName('button')[0];
-//TODO: refactor totalCost and idaTotalCost
+
 //compute total cost from weekArray
 const totalCost = (costArray) => {
 	let answer = costArray.reduce((total, currentObj) => {
